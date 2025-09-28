@@ -23,7 +23,9 @@ export default function ({ onRegister }) {
     <Layout>
     <div
       className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: "80vh" }}
+      style={{ height: "calc(100vh - 60px)",
+        width: "100%",
+       }}
     >
       <div className="card shadow p-4" style={{ maxWidth: "400px", width: "100%" }}>
         <h2 className="h5 mb-4 text-center">ユーザー登録</h2>
