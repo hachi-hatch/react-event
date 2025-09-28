@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
 export default function ({ onRegister }) {
   const [name, setName] = useState("");
@@ -19,29 +20,53 @@ export default function ({ onRegister }) {
   };
 
   return (
-    <div>
-      <h2>ユーザー登録</h2>
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="ユーザー名"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        /><br/>
-        <input
-          type="email"
-          placeholder="メールアドレス"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /><br/>
-        <input
-          type="password"
-          placeholder="パスワード"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        /><br/>
-        <button type="submit">登録</button>
-      </form>
+    <Layout>
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "80vh" }}
+    >
+      <div className="card shadow p-4" style={{ maxWidth: "400px", width: "100%" }}>
+        <h2 className="h5 mb-4 text-center">ユーザー登録</h2>
+        <form onSubmit={handleRegister}>
+          <div className="mb-3">
+            <label className="form-label">ユーザー名</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="ユーザー名を入力"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">メールアドレス</label>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="メールアドレスを入力"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">パスワード</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="パスワードを入力"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100">
+            登録
+          </button>
+        </form>
+      </div>
     </div>
+    </Layout>
   );
 }

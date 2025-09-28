@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { events } from "../data/events";
 import { newEvents } from "../data/newEvents";
@@ -23,17 +23,19 @@ function formatDateVariants(dateStr) {
 export default function Home() {
   const [search, setSearch] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+
+  // 個別のスクロール用 ref
+  const eventsRef = useRef(null);
+  const newEventsRef = useRef(null);
 
   const allEvents = [...events, ...newEvents];
 
   const filteredEvents = allEvents.filter((event) => {
-    const keyword = search.toLowerCase();
+    const keyword = searchKeyword.toLowerCase();
     if (!keyword) return true;
 
-    // 日付の表記を複数パターン用意
-    const dateVariants = formatDateVariants(event.date).map((d) =>
-      d.toLowerCase()
-    );
+    const dateVariants = formatDateVariants(event.date).map((d) => d.toLowerCase());
 
     return (
       event.title.toLowerCase().includes(keyword) ||
@@ -45,6 +47,19 @@ export default function Home() {
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchKeyword(searchInput); // ボタン押したときに検索
+  };
+
+  // スクロール関数（refを引数で渡す）
+  const scrollLeft = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
   };
 
   return (
@@ -66,67 +81,101 @@ export default function Home() {
         </button>
       </form>
 
-      {/* 横スクロール可能な領域 */}
-      <div
-        style={{
-          display: "flex",
-          overflowX: "auto",
-          gap: "16px",
-          padding: "10px",
-          border: "1px solid #ccc",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {events.map((event) => (
-          <Link
-            key={event.id}
-            to={`/events/${event.id}`}
-            style={{
-              minWidth: "200px",
-              height: "120px",
-              background: "#90cdf4",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              borderRadius: "8px",
-            }}
-          >
-            {event.title}
-          </Link>
-        ))}
+      {/* 既存イベントの横スクロール */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
+        <button onClick={() => scrollLeft(eventsRef)} className="px-3 py-1 bg-gray-300 rounded">◀</button>
+        <div
+          ref={eventsRef}
+          style={{
+            display: "flex",
+            overflowX: "hidden",
+            gap: "16px",
+            padding: "10px",
+            border: "1px solid #ccc",
+            width: "600px",
+            scrollBehavior: "smooth",
+          }}
+        >
+          {events.map((event) => (
+            <Link
+              key={`event-${event.id}`}
+              to={`/events/${event.id}`}
+              style={{
+                minWidth: "200px",
+                height: "120px",
+                background: "#90cdf4",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                borderRadius: "8px",
+              }}
+            >
+              {event.title}
+            </Link>
+          ))}
+        </div>
+        <button onClick={() => scrollRight(eventsRef)} className="px-3 py-1 bg-gray-300 rounded">▶</button>
       </div>
 
-      {/* 新規イベント */}
+      {/* 新規掲載イベントの横スクロール */}
       <h1 className="text-xl font-bold mb-4">新規掲載イベント</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
+        <button onClick={() => scrollLeft(newEventsRef)} className="px-3 py-1 bg-gray-300 rounded">◀</button>
+        <div
+          ref={newEventsRef}
+          style={{
+            display: "flex",
+            overflowX: "hidden",
+            gap: "16px",
+            padding: "10px",
+            border: "1px solid #ccc",
+            width: "600px",
+            scrollBehavior: "smooth",
+          }}
+        >
+          {newEvents.map((event) => (
+            <Link
+              key={`new-${event.id}`}
+              to={`/events/${event.id}`}
+              style={{
+                minWidth: "200px",
+                height: "120px",
+                background: "#90cdf4",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                borderRadius: "8px",
+              }}
+            >
+              {event.title}
+            </Link>
+          ))}
+        </div>
+        <button onClick={() => scrollRight(newEventsRef)} className="px-3 py-1 bg-gray-300 rounded">▶</button>
+      </div>
 
-      <div
-        style={{
-          display: "flex",
-          overflowX: "auto",
-          gap: "16px",
-          padding: "10px",
-          border: "1px solid #ccc",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {newEvents.map((event) => (
-          <Link
-            key={event.id}
-            to={`/events/${event.id}`}
-            style={{
-              minWidth: "200px",
-              height: "120px",
-              background: "#90cdf4",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              borderRadius: "8px",
-            }}
-          >
-            {event.title}
-          </Link>
+      {/* すべてのイベント */}
+      <h3 className="mb-3">すべてのイベント</h3>
+      <div className="row row-cols-1 row-cols-md-3 g-4">
+        {filteredEvents.map((event) => (
+          <div className="col" key={event.id}>
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title">{event.title}</h5>
+                <p className="card-text text-muted">
+                  {event.description || "イベントの説明がここに入ります。"}
+                </p>
+                <Link
+                  to={`/events/${event.id}`}
+                  className="btn btn-sm btn-outline-secondary"
+                >
+                  詳細を見る
+                </Link>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>
