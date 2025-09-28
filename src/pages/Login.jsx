@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
 export default function Login({ onLogin, registeredUser }) {
   const [email, setEmail] = useState("");
@@ -15,30 +16,51 @@ export default function Login({ onLogin, registeredUser }) {
     }
 
     if (email === registeredUser.email && password === registeredUser.password) {
-      onLogin(registeredUser); // ログイン状態にする
+      onLogin(registeredUser);
       alert("ログイン成功！");
-      navigate("/mypage"); // マイページへ
+      navigate("/mypage");
     } else {
       alert("メールアドレスまたはパスワードが違います");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>ログイン</h2>
-      <input
-        type="email"
-        placeholder="メールアドレス"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="パスワード"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">ログイン</button>
-    </form>
+    <Layout>
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ height: "calc(100vh - 60px)",
+        width: "100%",
+       }}
+    >
+      <div className="card shadow p-4" style={{ maxWidth: "400px", width: "100%" }}>
+        <h2 className="h5 mb-4 text-center">ログイン</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">メールアドレス</label>
+            <input
+              type="email"
+              className="form-control"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">パスワード</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100">
+            ログイン
+          </button>
+        </form>
+      </div>
+    </div>
+    </Layout>
   );
 }
