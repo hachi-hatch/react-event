@@ -21,17 +21,18 @@ function formatDateVariants(dateStr) {
 }
 
 export default function Home() {
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const allEvents = [...events, ...newEvents];
 
   const filteredEvents = allEvents.filter((event) => {
-    const keyword = search.toLowerCase();
+    const keyword = (searchKeyword || "").toLowerCase();
     if (!keyword) return true;
 
-    // 日付の表記を複数パターン用意
-    const dateVariants = formatDateVariants(event.date).map((d) =>
+    const title = (event.title || "").toLowerCase();
+    const location = (event.location || "").toLowerCase();
+    const dateVariants = formatDateVariants(event.date || "").map((d) =>
       d.toLowerCase()
     );
 
@@ -77,23 +78,23 @@ export default function Home() {
           whiteSpace: "nowrap",
         }}
       >
-        {events.map((event) => (
-          <Link
-            key={event.id}
-            to={`/events/${event.id}`}
-            style={{
-              minWidth: "200px",
-              height: "120px",
-              background: "#90cdf4",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              borderRadius: "8px",
-            }}
-          >
-            {event.title}
-          </Link>
+        {filteredEvents.map((event) => (
+        <Link
+          key={"existing-" + event.id}
+          to={`/events/${event.id}`}
+          style={{
+            minWidth: "200px",
+            height: "120px",
+            background: "#90cdf4",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            borderRadius: "8px",
+          }}
+        >
+          {event.title}
+        </Link>
         ))}
       </div>
 
@@ -110,24 +111,28 @@ export default function Home() {
           whiteSpace: "nowrap",
         }}
       >
-        {newEvents.map((event) => (
-          <Link
-            key={event.id}
-            to={`/events/${event.id}`}
-            style={{
-              minWidth: "200px",
-              height: "120px",
-              background: "#90cdf4",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              borderRadius: "8px",
-            }}
-          >
-            {event.title}
+        {filteredEvents.map((event, index) => {
+          const isNew = newEvents.some((ne) => ne.id === event.id);
+          return (
+            <Link
+              key={`${isNew ? "new" : "existing"}-${event.id}-${index}`}
+              to={`/events/${event.id}`}
+              style={{
+                minWidth: "200px",
+                height: "120px",
+                background: "#90cdf4",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                borderRadius: "8px",
+                marginRight: "16px",
+              }}
+            >
+            {event.title || "タイトルなし"}
           </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
